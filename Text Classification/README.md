@@ -1,7 +1,7 @@
 # Overview
-This is for solving The Text Classification
+The Text Classification base on [Convolutional Neural Networks for Sentence Classification - Yoo Kim](https://www.cs.cmu.edu/~diyiy/docs/naacl16.pdf)
 
-text_classification_CNN has implemented a classifier using CNN base on [Convolutional Neural Networks for Sentence Classification - Yoo Kim](https://www.cs.cmu.edu/~diyiy/docs/naacl16.pdf)
+text_classification_CNN has implemented a classifier using Convolutional Neural Network
 
 # Download Labeled train data and Pre-trained Glove Vector (if needed)
 ```
