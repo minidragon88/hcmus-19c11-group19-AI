@@ -185,6 +185,21 @@ model = create_cnn_network(data_to_train.shape[1:], activation_function)
 model.fit(data_to_train, label_to_train, epochs=100, batch_size=64, validation_data=((data_to_verify, label_to_verify)), callbacks = callbacks)
 save_model(model, trained_model_dir, activation_function + "_model.h5")
 
+all_data = np.copy(train_data)
+all_data = all_data / 255.0
+all_labels = transform_label_to_array(label_data)
+
+activation_function = "relu"
+print(activation_function.upper())
+model = load_model(trained_model_dir, activation_function)
+print(model.summary())
+scores = model.evaluate(data_to_verify, label_to_verify)
+print("Result on verify data")
+print("Loss : " + str(scores[0]) + " Accuracy: " + str(scores[1]))
+scores = model.evaluate(all_data, all_labels)
+print("Result on all data")
+print("Loss : " + str(scores[0]) + " Accuracy: " + str(scores[1]))
+
 """Get statistic of trained models"""
 
 all_data = np.copy(train_data)
@@ -223,3 +238,52 @@ print("Loss : " + str(scores[0]) + " Accuracy: " + str(scores[1]))
 scores = model.evaluate(all_data, all_labels)
 print("Result on all data")
 print("Loss : " + str(scores[0]) + " Accuracy: " + str(scores[1]))
+
+"""Tensor board"""
+
+activation_function = "relu"
+model = load_model(trained_model_dir, activation_function)
+print(model.summary())
+
+# Commented out IPython magic to ensure Python compatibility.
+activation_function = "relu"
+model = load_model(trained_model_dir, activation_function)
+
+@tf.function
+def traceme(x):
+    return model(x)
+
+
+logdir = "log"
+writer = tf.summary.create_file_writer(logdir)
+tf.summary.trace_on(graph=True, profiler=True)
+# Forward pass
+traceme(tf.zeros((1, 80, 80, 1)))
+with writer.as_default():
+    tf.summary.trace_export(name="model_trace", step=0, profiler_outdir=logdir)
+
+# %load_ext tensorboard
+# %tensorboard --logdir log
+
+"""Keras plot"""
+
+tf.keras.utils.plot_model(
+    model, to_file='model.png', show_shapes=True, show_layer_names=False,
+    rankdir='TB', expand_nested=True, dpi=96
+)
+
+"""prediction"""
+
+to_be_test = test_data[11251]
+candiadate = np.array(to_be_test).reshape(-1,80,80,1)
+print(model.predict(candiadate / 255.0))
+plt.imshow(np.squeeze(to_be_test),cmap="gray")
+
+"""Testing"""
+
+to_be_test = cv2.imread(os.path.join("/content/drive/My Drive/dog_cat/for_testing", 
+                                     "dog_and_cats.png"), cv2.IMREAD_GRAYSCALE)
+to_be_test = cv2.resize(to_be_test, dsize=(80, 80),interpolation = cv2.IMREAD_GRAYSCALE)
+candiadate = np.array(to_be_test).reshape(-1,80,80,1)
+print(model.predict(candiadate / 255.0))
+plt.imshow(np.squeeze(to_be_test),cmap="gray")
