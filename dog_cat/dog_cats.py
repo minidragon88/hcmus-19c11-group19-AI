@@ -239,39 +239,6 @@ scores = model.evaluate(all_data, all_labels)
 print("Result on all data")
 print("Loss : " + str(scores[0]) + " Accuracy: " + str(scores[1]))
 
-"""Tensor board"""
-
-activation_function = "relu"
-model = load_model(trained_model_dir, activation_function)
-print(model.summary())
-
-# Commented out IPython magic to ensure Python compatibility.
-activation_function = "relu"
-model = load_model(trained_model_dir, activation_function)
-
-@tf.function
-def traceme(x):
-    return model(x)
-
-
-logdir = "log"
-writer = tf.summary.create_file_writer(logdir)
-tf.summary.trace_on(graph=True, profiler=True)
-# Forward pass
-traceme(tf.zeros((1, 80, 80, 1)))
-with writer.as_default():
-    tf.summary.trace_export(name="model_trace", step=0, profiler_outdir=logdir)
-
-# %load_ext tensorboard
-# %tensorboard --logdir log
-
-"""Keras plot"""
-
-tf.keras.utils.plot_model(
-    model, to_file='model.png', show_shapes=True, show_layer_names=False,
-    rankdir='TB', expand_nested=True, dpi=96
-)
-
 """prediction"""
 
 to_be_test = test_data[11251]
